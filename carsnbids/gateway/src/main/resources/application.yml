@@ -1,0 +1,38 @@
+server:
+  port: 9191
+
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: BIDS-SERVICE
+          uri: lb://BIDS-SERVICE
+          predicates:
+            - Path=/biding/**
+          filters:
+            - JwtRequest
+        - id: CARS-SERVICE
+          uri: lb://CARS-SERVICE
+          predicates:
+            - Path=/cars/**
+          filters:
+            - JwtRequest
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+          filters:
+            - JwtRequest
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
