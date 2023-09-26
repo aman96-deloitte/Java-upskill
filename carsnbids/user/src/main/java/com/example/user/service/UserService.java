@@ -47,16 +47,19 @@ public class UserService {
     }
 
     public Users detailsUser(Users user){
-        Users userFetch =  userRepository.findByEmail(user.getEmail());
+        Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new ErrorFoundException("Invalid Email or password")));
 
-        if(!userFetch.getPassword().equals(user.getPassword()) ){
-        }
+        Users userFetch =  usersOptional.get();
+
         return userFetch;
     }
 
     public Users getUser(String token) {
         String userEmail = jwtUtil.extractUsername(token);
         System.out.print(userEmail);
-        return userRepository.findByEmail(userEmail);
+
+        Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(userEmail).orElseThrow(() -> new ErrorFoundException("Invalid token or user not found")));
+        Users userFetch =  usersOptional.get();
+        return userFetch;
     }
 }

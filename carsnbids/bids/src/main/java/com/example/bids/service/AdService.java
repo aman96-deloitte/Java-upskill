@@ -77,10 +77,11 @@ private RestTemplate restTemplate;
 
     public AdDetail viewAd(int adId, String authorizationHeader) {
         AdDetail adDetail = new AdDetail();
-        Ads ad = adsRepository.findByAdId(adId);
-        
+        Optional<Ads> adsOptional = Optional.ofNullable(adsRepository.findByAdId(adId).orElseThrow(() -> new ErrorFoundException("Invalid AdId")));
+        Ads ad = adsOptional.get();
 
-        Optional<Bids> bidsOptional =  bidsRepository.findByAdId(adId);
+
+        Optional<Bids> bidsOptional = Optional.ofNullable(bidsRepository.findByAdId(adId).orElseThrow(() -> new ErrorFoundException("Invalid BidId")));
         if(bidsOptional.isPresent()){
             Bids bid = bidsOptional.get();
             adDetail.setBids(bid);

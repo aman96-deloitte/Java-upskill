@@ -7,13 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AdsRepository extends JpaRepository<Ads,Integer> {
 
 
     @Query(value = "SELECT * FROM ads WHERE aid = ?1", nativeQuery = true)
-    Ads findByAdId(int id);
+    Optional<Ads> findByAdId(int id);
 
     List<Ads> findByBidEndTimeAfter(LocalDateTime now);
 }

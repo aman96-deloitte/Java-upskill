@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -47,7 +48,8 @@ public class CommentService {
             User user = responseEntity.getBody();
             // Process the response data here
             comments.setEmail(user.getEmail());
-            Ads ad = adsRepository.findByAdId(comments.getAid());
+            Optional<Ads> adsOptional = adsRepository.findByAdId(comments.getAid());
+            Ads ad = adsOptional.get();
             if(ad.getAdStatus()==1){
                 return commentsRepository.save(comments);
             }else{
