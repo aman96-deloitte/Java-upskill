@@ -5,14 +5,18 @@ import com.javaupskill.carsnbids.controllers.ErrorFoundException;
 import com.javaupskill.carsnbids.controllers.ErrorResponse;
 import com.javaupskill.carsnbids.entities.Car;
 import com.javaupskill.carsnbids.repositories.CarRepository;
+import com.javaupskill.carsnbids.repositories.CarRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +52,46 @@ public class CarService {
         return carRepository.findAll();
     }
 
-    public List<Car> filterCars(CarFilterBody carFilterBody) {
-        return carRepository.findByYearOrTransmissionOrBodyType(carFilterBody.getYear(), carFilterBody.getTransmission(), carFilterBody.getBodyType());
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public CarService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
+
+    public List<Car> filterCars(CarFilterBody carFilterBody) {
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM car WHERE 1 = 1");
+
+
+        if (carFilterBody.getTransmission()!= "") {
+            sql.append(" AND transmission = ?");
+            params.add(carFilterBody.getTransmission());
+        }
+
+        if (carFilterBody.getYear()!= 0) {
+            sql.append(" AND year = ?");
+            params.add(carFilterBody.getYear());
+        }
+
+        if (carFilterBody.getBodyType() != "") {
+            sql.append(" AND body_type = ?");
+            params.add(carFilterBody.getBodyType());
+        }
+        System.out.print(carFilterBody.getYear());
+
+        return jdbcTemplate.query(sql.toString(), new CarRowMapper(), params.toArray());
+
+
+//        return carRepository.findByYearOrTransmissionOrBodyType(carFilterBody.getYear(), carFilterBody.getTransmission(), carFilterBody.getBodyType());
+    }
+
+
 }
+
+
+
+
+

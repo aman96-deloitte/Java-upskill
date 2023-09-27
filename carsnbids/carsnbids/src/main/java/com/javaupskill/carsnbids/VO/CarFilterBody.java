@@ -19,6 +19,12 @@ public class CarFilterBody {
         return bodyType;
     }
 
+    public CarFilterBody() {
+        this.transmission = null;
+        this.bodyType = null;
+
+    }
+
     public void setBodyType(String bodyType) {
         this.bodyType = bodyType;
     }
